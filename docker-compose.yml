@@ -1,0 +1,108 @@
+version: '2.1'
+
+services:
+  iq-db:
+    container_name: iq-db
+    restart: always
+    image: postgres:9.6
+    build: ./db
+    volumes:
+      - ./db/pgdata:/pgdata
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
+      PGDATA: /pgdata
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+
+  iq-rabbitmq:
+    build: ./rabbitmq
+    container_name: iq-rabbitmq
+    image: rabbitmq:3-management
+    environment:
+        RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
+        RABBITMQ_DEFAULT_USER: "rabbit"
+        RABBITMQ_DEFAULT_PASS: "rabbit"
+        RABBITMQ_DEFAULT_VHOST: "/"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+
+  iq-adminer:
+    container_name: iq-adminer
+    image: adminer
+    restart: always
+    ports:
+      - 5000:8080
+
+  iq-redis:
+    container_name: iq-redis
+    image: 'bitnami/redis:latest'
+    environment:
+      - REDIS_REPLICATION_MODE=master
+      - REDIS_PASSWORD=master_password
+    volumes:
+      - ./redis/data:/data
+    ports:
+      - '6380:6379'
+
+  iq-php:
+    container_name: iq-php
+    build:
+      context: php7-fpm
+      args:
+        TIMEZONE: ${TIMEZONE}
+    volumes:
+      - ${SYMFONY_APP_PATH}:/var/www/symfony
+      - ./logs/symfony:/var/www/symfony/var/logs
+      - ./logs/supervisor:/var/www/symfony/supervisor/
+      - ./php7-fpm/php.ini:/usr/local/etc/php/conf.d/custom.ini
+    links:
+      - iq-db
+      - iq-redis
+      - iq-rabbitmq
+    depends_on:
+      iq-db:
+        condition: service_healthy
+      iq-rabbitmq:
+        condition: service_healthy
+      iq-redis:
+        condition: service_started
+
+  iq-nginx:
+    container_name: iq-nginx
+    build: nginx
+    hostname: iq-nginx
+    ports:
+      - 8080:80
+    volumes_from:
+      - iq-php
+    links:
+      - iq-php
+    depends_on:
+      iq-db:
+        condition: service_healthy
+      iq-rabbitmq:
+        condition: service_healthy
+      iq-redis:
+        condition: service_started
+    volumes:
+      - ./logs/nginx/:/var/log/nginx
+
+  iq-elk:
+    container_name: iq-elk
+    image: willdurand/elk
+    ports:
+      - 81:80
+    volumes:
+      - ./elk/logstash:/etc/logstash
+      - ./elk/logstash/patterns:/opt/logstash/patterns
+    volumes_from:
+      - iq-php
+      - iq-nginx

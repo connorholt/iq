@@ -1,0 +1,12 @@
+stof_doctrine_extensions:
+    orm:
+        default:
+            timestampable: true
+
+snc_redis:
+    clients:
+        default:
+            type: predis
+            alias: default
+            dsn: redis://master_password@iq-redis:6379
+            logging: ~

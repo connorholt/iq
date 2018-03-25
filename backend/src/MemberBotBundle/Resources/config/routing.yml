@@ -1,0 +1,21 @@
+member_bot_homepage:
+    path:     /
+    defaults: { _controller: MemberBotBundle:Default:index }
+member_bot_income:
+    path: /test/
+    defaults: { _controller: MemberBotBundle:Default:test }
+member_bot_withdraw:
+    path: /withdraw/
+    defaults: { _controller: MemberBotBundle:Default:withdraw }
+member_bot_lock:
+    path: /lock/
+    defaults: { _controller: MemberBotBundle:Default:lock }
+member_bot_lock_withdraw:
+    path: /lockWithdraw/
+    defaults: { _controller: MemberBotBundle:Default:lockWithdraw }
+member_bot_unlock:
+    path: /unlock/
+    defaults: { _controller: MemberBotBundle:Default:unlock }
+member_bot_transfer:
+    path: /transfer/
+    defaults: { _controller: MemberBotBundle:Default:transfer }

@@ -1,0 +1,10 @@
+/.web-server-pid
+/app/config/parameters.yml
+/build/
+/phpunit.xml
+var/*
+!var/cache/.gitkeep
+!var/SymfonyRequirements.php
+/vendor/
+/web/bundles/
+phpmetrics

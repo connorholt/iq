@@ -1,0 +1,51 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: true
+
+    # Consumers
+    MemberBotBundle\Consumer\BillingConsumer:
+        arguments:
+          - "@service_container"
+          - "@command_bus"
+          - "@message_factory"
+
+    # Services
+    message_factory:
+        class: MemberBotBundle\Message\Factory
+        arguments: ~
+
+    lock_manager:
+        class: MemberBotBundle\Service\LockManager
+        arguments:
+          - "@snc_redis.default"
+
+    # Handlers
+    MemberBotBundle\Handlers\Income\IncomeHandler:
+        arguments:
+          - "@service_container"
+          - "@lock_manager"
+        tags:
+            - { name: command_handler, handles: MemberBotBundle\Message\Income }
+
+    MemberBotBundle\Handlers\Withdraw\WithdrawHandler:
+        arguments:
+          - "@service_container"
+          - "@lock_manager"
+        tags:
+            - { name: command_handler, handles: MemberBotBundle\Message\Withdraw }
+
+    MemberBotBundle\Handlers\Transfer\TransferHandler:
+        arguments:
+          - "@service_container"
+          - "@lock_manager"
+        tags:
+            - { name: command_handler, handles: MemberBotBundle\Message\Transfer }
+
+    MemberBotBundle\Handlers\Lock\LockHandler:
+        arguments:
+          - "@service_container"
+          - "@lock_manager"
+        tags:
+            - { name: command_handler, handles: MemberBotBundle\Message\Lock }

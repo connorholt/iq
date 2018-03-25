@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<psalm
+        name="Example Psalm config with recommended defaults"
+        stopOnFirstError="false"
+        useDocblockTypes="true"
+        totallyTyped="false"
+        hideExternalErrors="true"
+>
+    <projectFiles>
+        <directory name="src"/>
+    </projectFiles>
+
+    <issueHandlers>
+        <!-- error -->
+        <InvalidArgument errorLevel="info"/>
+        <TooManyArguments errorLevel="info"/>
+
+
+        <DeprecatedMethod errorLevel="info"/>
+        <MissingClosureReturnType errorLevel="info"/>
+        <InvalidDocblock errorLevel="info"/>
+        <MisplacedRequiredParam errorLevel="info"/>
+        <PropertyNotSetInConstructor errorLevel="info"/>
+        <UntypedParam errorLevel="info"/>
+        <MoreSpecificImplementedParamType errorLevel="info"/>
+        <PossiblyNullArgument errorLevel="info"/>
+
+        <MissingReturnType errorLevel="info"/>
+        <MissingPropertyType errorLevel="info"/>
+        <PossiblyNullReference errorLevel="info"/>
+        <PossiblyFalseArgument errorLevel="info"/>
+        <RedundantConditionGivenDocblockType errorLevel="info"/>
+        <DocblockTypeContradiction errorLevel="info"/>
+        <MissingParamType errorLevel="info"/>
+        <PossiblyInvalidArgument errorLevel="info"/>
+        <InvalidReturnStatement errorLevel="info"/>
+        <ReservedWord errorLevel="info"/>
+        <InvalidArrayOffset errorLevel="info"/>
+
+        <LessSpecificReturnType errorLevel="suppress"/>
+        <UndefinedMethod errorLevel="suppress"/>
+        <TypeCoercion errorLevel="suppress"/>
+        <MissingConstructor errorLevel="suppress"/>
+        <PropertyNotSetInConstructor errorLevel="suppress"/>
+    </issueHandlers>
+</psalm>

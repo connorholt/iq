@@ -1,0 +1,3 @@
+member_bot:
+    resource: "@MemberBotBundle/Resources/config/routing.yml"
+    prefix:   /

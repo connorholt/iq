@@ -1,11 +1,11 @@
 ## Сборка проекта
 - Склонировать репу *git clone git@github.com:connorholt/iq.git*
 - В корне проекта запустить *make dev-start*, которая объединяет следующие команды:
--- docker-compose build --no-cache (может занять некоторое время)
--- chmod 777 на папку с логами
--- composer update
--- cache:clear
--- doctrine:migrations:migrate
+   - docker-compose build --no-cache (может занять некоторое время)
+   - chmod 777 на папку с логами
+   - composer update
+   - cache:clear
+  - doctrine:migrations:migrate
 
 - http://localhost:8080/app_dev.php/
 
@@ -16,10 +16,10 @@
 - Для вставки начальных даных в таблицу баланса, нужно открыть главную страницу *localhost:8080/app_dev.php/* в будущем вынесу в seed
 
 - После запуска сервисы доступны:
--- приложение *localhost:8080/app_dev.php/*
--- база данных (админер) *localhost:5000*
--- rabbitmq *localhost:15672*
--- kibana *localhost:81*
+  - приложение *localhost:8080/app_dev.php/*
+  - база данных (админер) *localhost:5000*
+  - rabbitmq *localhost:15672*
+  - kibana *localhost:81*
 
 ## Технологии используемые в проекте
 - Docker

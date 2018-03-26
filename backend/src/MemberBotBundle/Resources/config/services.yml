@@ -26,6 +26,7 @@ services:
         arguments:
           - "@service_container"
           - "@lock_manager"
+          - "@event_dispatcher"
         tags:
             - { name: command_handler, handles: MemberBotBundle\Message\Income }
 
@@ -33,6 +34,7 @@ services:
         arguments:
           - "@service_container"
           - "@lock_manager"
+          - "@event_dispatcher"
         tags:
             - { name: command_handler, handles: MemberBotBundle\Message\Withdraw }
 
@@ -40,6 +42,7 @@ services:
         arguments:
           - "@service_container"
           - "@lock_manager"
+          - "@event_dispatcher"
         tags:
             - { name: command_handler, handles: MemberBotBundle\Message\Transfer }
 
@@ -47,5 +50,6 @@ services:
         arguments:
           - "@service_container"
           - "@lock_manager"
+          - "@event_dispatcher"
         tags:
             - { name: command_handler, handles: MemberBotBundle\Message\Lock }

@@ -6,12 +6,14 @@ namespace MemberBotBundle\Handlers\Lock;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MemberBotBundle\Entity\Balance;
+use MemberBotBundle\Event\Lock as LockEvent;
 use MemberBotBundle\Handlers\Exception\NotHandlerCommandException;
 use MemberBotBundle\Handlers\Exception\UserLockedException;
 use MemberBotBundle\Message\Lock;
 use MemberBotBundle\Repository\BalanceRepository;
 use MemberBotBundle\Service\LockManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class LockHandler
 {
@@ -21,14 +23,19 @@ class LockHandler
     /** @var LockManagerInterface */
     private $lockManager;
 
+    /** @var EventDispatcherInterface */
+    private $eventDispatcher;
+
     public function __construct(
         ContainerInterface $container,
-        LockManagerInterface $lockManager
+        LockManagerInterface $lockManager,
+        EventDispatcherInterface $eventDispatcher
     ) {
         /** @var EntityManagerInterface $entityManager */
         $entityManager = $container->get('doctrine.orm.entity_manager');
         $this->balanceRepository = $entityManager->getRepository(Balance::class);
         $this->lockManager = $lockManager;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -57,6 +64,7 @@ class LockHandler
             throw new NotHandlerCommandException($e->getMessage());
         }
         $this->unlock($command);
+        $this->fireEvent($command);
 
         return (bool) $result;
     }
@@ -80,5 +88,16 @@ class LockHandler
     private function unlock(Lock $command): void
     {
         $this->lockManager->unlock($command->getUserId());
+    }
+
+    /**
+     * @param Lock $command
+     */
+    private function fireEvent(Lock $command): void
+    {
+        $this->eventDispatcher->dispatch(
+            LockEvent::NAME,
+            new LockEvent($command)
+        );
     }
 }

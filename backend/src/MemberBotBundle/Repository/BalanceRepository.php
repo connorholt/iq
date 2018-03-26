@@ -79,6 +79,17 @@ class BalanceRepository extends \Doctrine\ORM\EntityRepository
         }
     }
 
+    /**
+     * Перевод денег от пользователя, пользователю.
+     *
+     * @param int $userId
+     * @param int $userFromId
+     * @param int $sum
+     *
+     * @throws \Exception
+     *
+     * @return bool
+     */
     public function transferSum(int $userId, int $userFromId, int $sum): bool
     {
         $this->getEntityManager()->getConnection()->beginTransaction();
@@ -109,6 +120,17 @@ class BalanceRepository extends \Doctrine\ORM\EntityRepository
         }
     }
 
+    /**
+     * Блокирование суммы денег на счету.
+     *
+     * @param int    $userId
+     * @param string $uuid
+     * @param int    $sum
+     *
+     * @throws \Exception
+     *
+     * @return bool
+     */
     public function lockSum(int $userId, string $uuid, int $sum): bool
     {
         $this->getEntityManager()->getConnection()->beginTransaction();
@@ -145,6 +167,17 @@ class BalanceRepository extends \Doctrine\ORM\EntityRepository
         }
     }
 
+    /**
+     * Разблокировка средств и снятие суммы.
+     *
+     * @param int    $userId
+     * @param string $uuid
+     * @param int    $sum
+     *
+     * @throws \Exception
+     *
+     * @return bool
+     */
     public function unlockAndSubSum(int $userId, string $uuid, int $sum): bool
     {
         $this->getEntityManager()->getConnection()->beginTransaction();
@@ -194,6 +227,7 @@ class BalanceRepository extends \Doctrine\ORM\EntityRepository
             $deleteBlockedMoneyQuery = $this->getDeleteBlockedMoneyQuery($userId, $uuid);
             $deleteBlockedMoneyQuery->execute();
 
+            // @todo проверить, что была запись в таблице blocked_money, чтобы не начислять лишние деньги
             $balanceAddQuery = $this->getAddSumQuery($userId, $sum);
             $balanceAddQuery->execute();
 
@@ -218,6 +252,8 @@ class BalanceRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
+     * Добавление записи в лог транзакций.
+     *
      * @param int   $userId
      * @param int   $sum
      * @param int   $type
@@ -240,6 +276,8 @@ class BalanceRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
+     * Запрос на начисление суммы.
+     *
      * @param int $userId
      * @param int $sum
      *
@@ -259,6 +297,8 @@ class BalanceRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
+     * Запрос на изменение суммы.
+     *
      * @param int $userId
      * @param int $sum
      *
@@ -278,6 +318,8 @@ class BalanceRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
+     * Запрос на удаление записи заблокирования средств.
+     *
      * @param int    $userId
      * @param string $uuid
      *

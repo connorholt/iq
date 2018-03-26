@@ -12,7 +12,7 @@ dev-start:
 	${INFO} "Starting up"
 	@ docker-compose up -d
 	${INFO} "Chmod on var/log"
-	@ docker-compose run --rm -u root iq-php chmod -R 777 var/*
+	@ docker-compose run --rm -u root iq-php chmod -R 777 var/logs
 	${INFO} "Run composer update"
 	@ docker-compose run --rm iq-php composer update
 	${INFO} "Clear cache symfony"

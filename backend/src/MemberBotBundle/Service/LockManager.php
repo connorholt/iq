@@ -15,6 +15,8 @@ class LockManager implements LockManagerInterface
      */
     private const PASSWORD = 'master_password';
 
+    private const LOCK_TIME = 60 * 60;
+
     /** @var Client $redis */
     private $redis;
 
@@ -26,9 +28,6 @@ class LockManager implements LockManagerInterface
     /**
      * Блокировка пользователя.
      *
-     * @todo можно добавить проверку на время если к time() добавить n секунд, а потом проверять
-     * @todo для скорости выполнения задания эту проверку не стал реализовывать
-     *
      * @param int $userId
      *
      * @return bool
@@ -36,9 +35,24 @@ class LockManager implements LockManagerInterface
     public function lock(int $userId): bool
     {
         $this->redis->auth(self::PASSWORD);
-        $result = $this->redis->setnx($this->key($userId), time());
+        $result = $this->redis->setnx($this->key($userId), $this->getLockTime());
 
-        return (bool) ($result === 1);
+        if ($result === 1) {
+            return true;
+        }
+        $expired = $this->redis->get($this->key($userId));
+
+        if ($expired < time()) {
+            $expired = $this->redis->getset($this->key($userId), $this->getLockTime());
+
+            if ($expired > time()) {
+                return false;
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -66,5 +80,13 @@ class LockManager implements LockManagerInterface
     private function key(int $id): string
     {
         return self::PREFIX . (string) $id;
+    }
+
+    /**
+     * @return int
+     */
+    private function getLockTime(): int
+    {
+        return time() + self::LOCK_TIME + 1;
     }
 }
